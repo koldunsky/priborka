@@ -1,4 +1,4 @@
-# piborka
+# priborka
 
 ## Project setup
 ```
