@@ -1,18 +1,23 @@
 <template>
-  <div class="scene" :style="{ width: `${size}px`, height: `${size}px` }">
-    {{ x }},{{ y }},{{ z }}
-    <div
-      class="cube"
-      :style="{
-        transform: `rotateX(${x}deg) rotateY(${y}deg) rotateZ(${z}deg)`
-      }"
-    >
+  <div>
+    <p>x:{{ x }}</p>
+    <p>y:{{ y }}</p>
+    <p>z:{{ z }}</p>
+    <div class="scene" :style="{ width: `${size}px`, height: `${size}px` }">
+      <button @click="requestPermission">Launch!</button>
       <div
-        v-for="side in ['front', 'back', 'right', 'left', 'top', 'bottom']"
-        :key="side"
-        :class="`cube__face cube__face--${side}`"
+        class="cube"
+        :style="{
+          transform: `rotateX(${x}deg) rotateY(${-y}deg) rotateZ(${z}deg)`
+        }"
       >
-        {{ side }}
+        <div
+          v-for="side in ['front', 'back', 'right', 'left', 'top', 'bottom']"
+          :key="side"
+          :class="`cube__face cube__face--${side}`"
+        >
+          {{ side }}
+        </div>
       </div>
     </div>
   </div>
@@ -41,11 +46,26 @@ export default {
       this.x = beta;
       this.y = gamma;
       this.z = alpha;
+    },
+    requestPermission() {
+      if (
+        typeof DeviceMotionEvent !== "undefined" &&
+        typeof DeviceMotionEvent.requestPermission === "function"
+      ) {
+        // (optional) Do something before API request prompt.
+        DeviceMotionEvent.requestPermission()
+          .then(response => {
+            // (optional) Do something after API prompt dismissed.
+            if (response == "granted") {
+              window.addEventListener(
+                "deviceorientation",
+                this.handleOrientation
+              );
+            }
+          })
+          .catch(console.error);
+      }
     }
-  },
-
-  beforeMount() {
-    window.addEventListener("deviceorientation", this.handleOrientation);
   }
 };
 </script>

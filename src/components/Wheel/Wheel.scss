@@ -1,0 +1,56 @@
+$height: 130px;
+$PI: 3.14;
+
+@mixin stretch {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+}
+
+.scene {
+  width: 50px;
+  height: $height;
+  background-color: rebeccapurple;
+  position: relative;
+}
+
+.wheelHolder {
+  transform-style: preserve-3d;
+  perspective: 4000px;
+  background: rgba(red, .5);
+  height: 100%;
+  position: relative;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  transform-origin: 50% 50%;
+  transform: rotateX(45deg);
+}
+
+.wheelInnerHolder {
+  @include stretch;
+  transform-origin: 50% 50%;
+  transform-style: preserve-3d;
+  perspective: 4000px;
+  background: rgba(green, .6);
+  transform: translateZ(-$height / 2);
+
+}
+
+.wheelPart {
+  @include stretch;
+  background: white;
+  outline: 1px solid rosybrown;
+  transform-origin: 50% 50% $height/2;
+  transition: all .3s ease;
+}
+
+button {
+  position: absolute;
+  top: -20px;
+}
