@@ -4,6 +4,14 @@ module.exports = {
     node: true
   },
   extends: ["plugin:vue/essential", "eslint:recommended", "@vue/prettier"],
+  overrides: [
+    {
+      files: ["*.vue"],
+      rules: {
+        indent: "off"
+      }
+    }
+  ],
   parserOptions: {
     parser: "babel-eslint"
   },

@@ -1,16 +1,23 @@
 <template>
   <div class="scene">
-    <button @click="increaseDeg">+</button>
-    <button @click="decreaseDeg">-</button>
-    <div class="wheelHolder">
-      <div class="wheelInnerHolder">
+    <div class="wheelHolder" @scroll="onWheelHolderScroll" ref="wheelHolder">
+      <div class="wheelInnerHolder" ref="wheelInnerHolder">
         <div
-          v-for="(part, i) in new Array(amountOfPartials).fill('')"
+          v-for="(_, i) in new Array(max).fill('')"
           :key="i"
-          class="wheelPart"
+          class="wheelItem wheelItemPhantom"
+          :ref="`wheelItemPhantom_${i}`"
+        >
+          {{ i }}
+        </div>
+      </div>
+      <div class="wheelDigitsHolder">
+        <div
+          v-for="(_, i) in new Array(max).fill('')"
+          :key="i"
+          class="wheelItem wheelItemDigits"
           :style="{
-            height: partialHeight,
-            transform: `rotateX(${(360 / 12) * -i + deg}deg)`
+            transform: `rotateX(${getRotateX(i)}deg)`
           }"
         >
           {{ i }}
@@ -29,6 +36,7 @@ export default {
     },
     max: {
       // required: true,
+      default: 15,
       type: Number
     }
   },
@@ -39,7 +47,8 @@ export default {
       y: 0,
       z: 0,
       deg: 0,
-      amountOfPartials: 12
+      amountOfPartials: 12,
+      scrolled: 0
     };
   },
 
@@ -51,11 +60,27 @@ export default {
   },
 
   methods: {
-    increaseDeg() {
-      this.deg += 10;
+    getRotateX(i) {
+      console.info(this);
+      const wheelHolderH = 130;
+      const wheelItemH = 40;
+      const deg = (wheelHolderH * Math.PI) / 4 / wheelItemH;
+      const degRaw = -1 * i * (90 / deg) + this.scrolled * 5;
+      if (degRaw > 90) {
+        return 90;
+      }
+
+      if (degRaw < -90) {
+        return -90;
+      }
+      return degRaw;
     },
-    decreaseDeg() {
-      this.deg -= 10;
+    onWheelHolderScroll(e) {
+      console.log(e);
+      const diff =
+        this.$refs.wheelInnerHolder.clientHeight - e.target.clientHeight;
+      console.info(e.target.scrollTop / diff);
+      this.scrolled = (e.target.scrollTop / diff) * 100;
     }
   }
 };

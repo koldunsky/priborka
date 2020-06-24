@@ -1,8 +1,5 @@
 <template>
-  <div>
-    <p>x:{{ x }}</p>
-    <p>y:{{ y }}</p>
-    <p>z:{{ z }}</p>
+  <div class="container">
     <div class="scene" :style="{ width: `${size}px`, height: `${size}px` }">
       <button @click="requestPermission">Launch!</button>
       <div
@@ -19,6 +16,11 @@
           {{ side }}
         </div>
       </div>
+    </div>
+    <div>
+      <p>x:{{ x }}</p>
+      <p>y:{{ y }}</p>
+      <p>z:{{ z }}</p>
     </div>
   </div>
 </template>
@@ -56,7 +58,7 @@ export default {
         DeviceMotionEvent.requestPermission()
           .then(response => {
             // (optional) Do something after API prompt dismissed.
-            if (response == "granted") {
+            if (response === "granted") {
               window.addEventListener(
                 "deviceorientation",
                 this.handleOrientation

@@ -1,5 +1,6 @@
 $height: 130px;
 $PI: 3.14;
+$itemHeight: 40px;
 
 @mixin stretch {
   position: absolute;
@@ -13,44 +14,65 @@ $PI: 3.14;
 .scene {
   width: 50px;
   height: $height;
-  background-color: rebeccapurple;
+  background-color: lightcyan;
   position: relative;
 }
 
 .wheelHolder {
-  transform-style: preserve-3d;
-  perspective: 4000px;
-  background: rgba(red, .5);
+  background: rgba(red, .2);
   height: 100%;
-  position: relative;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  margin: auto;
-  transform-origin: 50% 50%;
-  transform: rotateX(45deg);
+  overflow: scroll;
+  overscroll-behavior: contain;
 }
 
 .wheelInnerHolder {
-  @include stretch;
   transform-origin: 50% 50%;
-  transform-style: preserve-3d;
-  perspective: 4000px;
-  background: rgba(green, .6);
-  transform: translateZ(-$height / 2);
-
+  border: 1px saddlebrown solid;
+  background: rgba(green, .2);
 }
 
 .wheelPart {
-  @include stretch;
   background: white;
   outline: 1px solid rosybrown;
   transform-origin: 50% 50% $height/2;
   transition: all .3s ease;
+  padding-top: 100%;
+  position: relative;
+}
+
+.wheelPart__text {
+  position: absolute;
+  top: 5px;
+  left: 5px;
 }
 
 button {
   position: absolute;
   top: -20px;
+}
+
+.wheelItem {
+  position: relative;
+  height: $itemHeight;
+  outline: 1px solid black;
+}
+
+.wheelItemPhantom {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.wheelItemDigits {
+  position: absolute;
+  width: 100%;
+  top: calc(50% - #{$itemHeight / 2});
+  transform-origin: 50% 50% $height/-2;
+  background: lightcyan;
+}
+
+.wheelDigitsHolder {
+  @include stretch;
+  transform-style: preserve-3d;
+  perspective: 600px;
+  pointer-events: none;
 }
