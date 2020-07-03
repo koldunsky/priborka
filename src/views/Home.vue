@@ -18,6 +18,12 @@
           :max="180"
           @change="handleAxisChange(name)($event)"
         />
+        <Wheel
+          name="Perspective"
+          :max="2500"
+          :initialValue="1000"
+          @change="handlePerspectiveChange"
+        />
       </div>
     </section>
   </div>
@@ -55,6 +61,9 @@ export default {
           [name]: 360 * value
         };
       };
+    },
+    handlePerspectiveChange(persp) {
+      console.info("persp", persp);
     }
   }
 };

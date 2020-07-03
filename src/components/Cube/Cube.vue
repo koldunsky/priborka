@@ -1,6 +1,13 @@
 <template>
   <div class="container">
-    <div class="scene" :style="{ width: `${size}px`, height: `${size}px` }">
+    <div
+      class="scene"
+      :style="{
+        width: `${size}px`,
+        height: `${size}px`,
+        perspective: `${perspective}px`
+      }"
+    >
       <div
         class="cube"
         :style="{
@@ -30,6 +37,10 @@ const mapping = {
 };
 export default {
   props: {
+    perspective: {
+      default: 1000,
+      type: Number
+    },
     x: {
       type: Number
     },

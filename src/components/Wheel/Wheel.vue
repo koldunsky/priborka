@@ -38,12 +38,15 @@ export default {
     name: {
       type: String
     },
+    initialValue: {
+      type: Number,
+      default: 0
+    },
     min: {
       type: Number,
       default: 0
     },
     max: {
-      // required: true,
       default: 15,
       type: Number
     }
@@ -65,6 +68,11 @@ export default {
       const additional = 0;
       return `calc(100% * 3.14 / ${this.amountOfPartials + additional})`;
     }
+  },
+
+  mounted() {
+    const scrollAmount = this.initialValue / this.max;
+    console.info(scrollAmount, this.$refs.wheelHolder.scrollTop);
   },
 
   methods: {
