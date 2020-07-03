@@ -1,7 +1,6 @@
 <template>
   <div class="container">
     <div class="scene" :style="{ width: `${size}px`, height: `${size}px` }">
-      <button @click="requestPermission">Launch!</button>
       <div
         class="cube"
         :style="{
@@ -9,65 +8,89 @@
         }"
       >
         <div
-          v-for="side in ['front', 'back', 'right', 'left', 'top', 'bottom']"
-          :key="side"
-          :class="`cube__face cube__face--${side}`"
+          v-for="(side, name) in sides"
+          :key="name"
+          :class="`cube__face cube__face--${name}`"
+          :style="getStyles(name, side)"
         >
-          {{ side }}
+          {{ name }}
         </div>
       </div>
-    </div>
-    <div>
-      <p>x:{{ x }}</p>
-      <p>y:{{ y }}</p>
-      <p>z:{{ z }}</p>
     </div>
   </div>
 </template>
 
 <script>
+const mapping = {
+  bottom: ({ x, y, z }) => ({
+    x,
+    y: y * -1,
+    z
+  })
+};
 export default {
   props: {
+    x: {
+      type: Number
+    },
+    y: {
+      type: Number
+    },
+    z: {
+      type: Number
+    },
     size: {
       default: 300
     }
   },
 
-  data() {
-    return {
-      x: 0,
-      y: 0,
-      z: 0
-    };
+  methods: {
+    getStyles(name, coords) {
+      const zzz = mapping[name] ? mapping[name](coords) : coords;
+      return `
+        rotateX(${zzz.x + this.x}deg)
+        rotateY(${zzz.y + this.y}deg)
+        rotateZ(${zzz.z + this.z}deg)
+        translateZ(100px)
+      `;
+    }
   },
 
-  methods: {
-    handleOrientation(e) {
-      console.info(e);
-      const { alpha, beta, gamma } = e;
-      this.x = beta;
-      this.y = gamma;
-      this.z = alpha;
-    },
-    requestPermission() {
-      if (
-        typeof DeviceMotionEvent !== "undefined" &&
-        typeof DeviceMotionEvent.requestPermission === "function"
-      ) {
-        // (optional) Do something before API request prompt.
-        DeviceMotionEvent.requestPermission()
-          .then(response => {
-            // (optional) Do something after API prompt dismissed.
-            if (response === "granted") {
-              window.addEventListener(
-                "deviceorientation",
-                this.handleOrientation
-              );
-            }
-          })
-          .catch(console.error);
+  data() {
+    return {
+      sides: {
+        front: {
+          x: 0,
+          y: 0,
+          z: 0
+        },
+        back: {
+          x: 0,
+          y: 180,
+          z: 0
+        },
+        right: {
+          x: 0,
+          y: 90,
+          z: 0
+        },
+        left: {
+          x: 0,
+          y: 270,
+          z: 0
+        },
+        top: {
+          x: 90,
+          y: 0,
+          z: 0
+        },
+        bottom: {
+          x: -90,
+          y: 0,
+          z: 0
+        }
       }
-    }
+    };
   }
 };
 </script>

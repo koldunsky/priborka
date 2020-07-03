@@ -1,6 +1,8 @@
 $height: 130px;
 $PI: 3.14;
-$itemHeight: 40px;
+$itemHeight: 30px;
+$nameFZ: 12px;
+$nameHeight: 18px;
 
 @mixin stretch {
   position: absolute;
@@ -13,9 +15,22 @@ $itemHeight: 40px;
 
 .scene {
   width: 50px;
+  margin: 0  $nameHeight;
   height: $height;
   background-color: lightcyan;
   position: relative;
+}
+
+.nameText {
+  position: absolute;
+  right: 100%;
+  top: -$nameFZ;
+  transform: rotateZ(-90deg);
+  font-size: $nameFZ;
+  line-height: $nameHeight;
+  height: $nameHeight;
+  white-space: nowrap;
+  transform-origin: 100% 100%;
 }
 
 .wheelHolder {

@@ -1,12 +1,16 @@
 <template>
   <div class="scene">
+    <div class="nameText">
+      {{ name }}
+      {{ max }}
+    </div>
     <div class="wheelHolder" @scroll="onWheelHolderScroll" ref="wheelHolder">
       <div class="wheelInnerHolder" ref="wheelInnerHolder">
         <div
           v-for="(_, i) in new Array(max).fill('')"
           :key="i"
           class="wheelItem wheelItemPhantom"
-          :ref="`wheelItemPhantom_${i}`"
+          ref="wheelItemPhantom"
         >
           {{ i }}
         </div>
@@ -17,7 +21,8 @@
           :key="i"
           class="wheelItem wheelItemDigits"
           :style="{
-            transform: `rotateX(${getRotateX(i)}deg)`
+            transform: `rotateX(${getRotateX(i)}deg)`,
+            opacity: getOpacity(i)
           }"
         >
           {{ i }}
@@ -30,6 +35,9 @@
 <script>
 export default {
   props: {
+    name: {
+      type: String
+    },
     min: {
       type: Number,
       default: 0
@@ -61,11 +69,15 @@ export default {
 
   methods: {
     getRotateX(i) {
-      console.info(this);
       const wheelHolderH = 130;
-      const wheelItemH = 40;
-      const deg = (wheelHolderH * Math.PI) / 4 / wheelItemH;
-      const degRaw = -1 * i * (90 / deg) + this.scrolled * 5;
+      const wheelItemH = 30;
+      const roundLength = wheelHolderH * Math.PI;
+      const contH = wheelItemH * this.max;
+      const amountOfDegrees = (contH / roundLength) * 360;
+      const shiftForOne = amountOfDegrees / this.max;
+      const shiftForLast = shiftForOne * this.max;
+      const degRaw = -1 * i * shiftForOne + this.scrolled * shiftForLast;
+
       if (degRaw > 90) {
         return 90;
       }
@@ -75,12 +87,16 @@ export default {
       }
       return degRaw;
     },
+    getOpacity(i) {
+      return i + 1;
+    },
     onWheelHolderScroll(e) {
-      console.log(e);
       const diff =
-        this.$refs.wheelInnerHolder.clientHeight - e.target.clientHeight;
-      console.info(e.target.scrollTop / diff);
-      this.scrolled = (e.target.scrollTop / diff) * 100;
+        this.$refs.wheelInnerHolder.getBoundingClientRect().height -
+        e.target.getBoundingClientRect().height;
+      // console.info(this.name, this.scrolled);
+      this.scrolled = e.target.scrollTop / diff;
+      this.$emit("change", this.scrolled);
     }
   }
 };
