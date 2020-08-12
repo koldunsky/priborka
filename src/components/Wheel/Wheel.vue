@@ -2,22 +2,21 @@
   <div class="scene">
     <div class="nameText">
       {{ name }}
-      {{ max }}
     </div>
     <div class="wheelHolder" @scroll="onWheelHolderScroll" ref="wheelHolder">
       <div class="wheelInnerHolder" ref="wheelInnerHolder">
         <div
-          v-for="(_, i) in new Array(max).fill('')"
+          v-for="(_, i) in new Array(vsegoPlastinok).fill('')"
           :key="i"
           class="wheelItem wheelItemPhantom"
           ref="wheelItemPhantom"
         >
-          {{ i }}
+          {{ getPartialValue(i) }}
         </div>
       </div>
       <div class="wheelDigitsHolder">
         <div
-          v-for="(_, i) in new Array(max).fill('')"
+          v-for="(_, i) in new Array(vsegoPlastinok).fill('')"
           :key="i"
           class="wheelItem wheelItemDigits"
           :style="{
@@ -25,7 +24,17 @@
             opacity: getOpacity(i)
           }"
         >
-          {{ i }}
+          {{ getPartialValue(i) }}
+        </div>
+        <div
+          :key="vsegoPlastinok + 1"
+          class="wheelItem wheelItemDigits"
+          :style="{
+            transform: `rotateX(${getRotateX(vsegoPlastinok)}deg)`,
+            opacity: getOpacity(vsegoPlastinok)
+          }"
+        >
+          {{ getPartialValue(vsegoPlastinok) }}
         </div>
       </div>
     </div>
@@ -38,10 +47,6 @@ export default {
     name: {
       type: String
     },
-    initialValue: {
-      type: Number,
-      default: 0
-    },
     min: {
       type: Number,
       default: 0
@@ -49,6 +54,17 @@ export default {
     max: {
       default: 15,
       type: Number
+    },
+    step: {
+      default: 1,
+      type: Number
+    },
+    initialValue: {
+      type: Number
+    },
+    returnAbsolute: {
+      default: false,
+      type: Boolean
     }
   },
 
@@ -59,31 +75,52 @@ export default {
       z: 0,
       deg: 0,
       amountOfPartials: 12,
-      scrolled: 0
+      scrolled: 0,
+      wheelHolderH: 130,
+      wheelItemH: 30
     };
+  },
+
+  mounted() {
+    const shouldBeScrolled = (this.initialValue - this.min) / this.minMaxDiff;
+
+    if (!isNaN(shouldBeScrolled)) {
+      const { wheelHolder } = this.$refs;
+      console.info(shouldBeScrolled);
+      console.dir(wheelHolder);
+      wheelHolder.scrollTop =
+        shouldBeScrolled * (wheelHolder.scrollHeight - this.wheelHolderH);
+    }
   },
 
   computed: {
     partialHeight() {
       const additional = 0;
       return `calc(100% * 3.14 / ${this.amountOfPartials + additional})`;
-    }
-  },
+    },
+    vsegoPlastinok() {
+      return this.minMaxDiff / this.step;
+    },
 
-  mounted() {
-    const scrollAmount = this.initialValue / this.max;
-    console.info(scrollAmount, this.$refs.wheelHolder.scrollTop);
+    minMaxDiff() {
+      return this.max - this.min;
+    },
+
+    absoluteValue() {
+      const { min, minMaxDiff, scrolled } = this;
+      return min + minMaxDiff * scrolled;
+    }
   },
 
   methods: {
     getRotateX(i) {
-      const wheelHolderH = 130;
-      const wheelItemH = 30;
+      const diff = this.vsegoPlastinok;
+      const { wheelItemH, wheelHolderH } = this;
       const roundLength = wheelHolderH * Math.PI;
-      const contH = wheelItemH * this.max;
+      const contH = wheelItemH * diff;
       const amountOfDegrees = (contH / roundLength) * 360;
-      const shiftForOne = amountOfDegrees / this.max;
-      const shiftForLast = shiftForOne * this.max;
+      const shiftForOne = amountOfDegrees / diff;
+      const shiftForLast = shiftForOne * diff;
       const degRaw = -1 * i * shiftForOne + this.scrolled * shiftForLast;
 
       if (degRaw > 90) {
@@ -102,9 +139,15 @@ export default {
       const diff =
         this.$refs.wheelInnerHolder.getBoundingClientRect().height -
         e.target.getBoundingClientRect().height;
-      // console.info(this.name, this.scrolled);
       this.scrolled = e.target.scrollTop / diff;
-      this.$emit("change", this.scrolled);
+      this.$emit(
+        "change",
+        this.returnAbsolute ? this.absoluteValue : this.scrolled
+      );
+    },
+    getPartialValue(i) {
+      const { min, step } = this;
+      return min + i * step;
     }
   }
 };

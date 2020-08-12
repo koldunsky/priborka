@@ -9,19 +9,24 @@
       </AccelorometerProvider>
     </section>
     <section>
-      <Cube v-bind="axises" />
+      <Cube v-bind="axises" :perspective="perspective" />
       <div class="row">
         <Wheel
           v-for="(_, name) in axises"
           :key="name"
           :name="`${name} axis`"
           :max="180"
+          returnAbsolute
+          :step="10"
           @change="handleAxisChange(name)($event)"
         />
         <Wheel
           name="Perspective"
+          :min="500"
           :max="2500"
-          :initialValue="1000"
+          :step="50"
+          :initialValue="2000"
+          returnAbsolute
           @change="handlePerspectiveChange"
         />
       </div>
@@ -42,7 +47,8 @@ export default {
         x: 0,
         y: 0,
         z: 0
-      }
+      },
+      perspective: 1000
     };
   },
   components: {
@@ -51,19 +57,17 @@ export default {
     AccelorometerProvider
   },
   methods: {
-    handleFirstWheel(data) {
-      this.firstWheel = data;
-    },
     handleAxisChange(name) {
       return value => {
         this.axises = {
           ...this.axises,
-          [name]: 360 * value
+          [name]: value
         };
       };
     },
     handlePerspectiveChange(persp) {
       console.info("persp", persp);
+      this.perspective = persp;
     }
   }
 };
